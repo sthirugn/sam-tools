@@ -7,6 +7,12 @@ from fauxfactory import gen_string, gen_integer, gen_email
 
 USER_NAME = 'admin'
 USER_PASSWORD = 'admin'
+MANIFEST_URL = "/tmp/test_sam_manifest.zip"
+PROVIDER_NAME = "Red Hat"
+
+
+class InvalidInputError(Exception):
+    """Indicates an invalid input error"""
 
 
 def _run_command(cmd=None):
@@ -128,17 +134,58 @@ def create_system_group(name=None, org=None):
     return name
 
 
+def import_manifest(org=None, filepath=None, delete=True):
+    """Imports a manifest
+
+    If delete is set to False, the manifest will not be deleted and the user
+    has to handle the deletion manually or by calling delete_manifest
+
+    """
+    if org is None:
+        org = create_org()
+    if filepath is None:
+        filepath = MANIFEST_URL
+    cmd = 'provider import_manifest create --name "{0}" --org {1} --file "{2}"'
+    cmd = cmd.format(PROVIDER_NAME, org, filepath)
+    _run_command(cmd)
+    if delete is True:
+        print ('*** After manifest import it will be deleted so as',
+               ' to reuse it ***')
+        delete_manifest(org)
+
+
+def refresh_manifest(org=None):
+    """Refreshes a manifest"""
+    if org is None:
+        raise InvalidInputError
+    cmd = 'provider refresh_manifest --name "{0}" --org {1}'
+    cmd = cmd.format(PROVIDER_NAME, org)
+    _run_command(cmd)
+
+
+def delete_manifest(org=None):
+    """Deletes a manifest"""
+    if org is None:
+        raise InvalidInputError
+    cmd = 'provider delete_manifest --name "{0}" --org {1}'
+    cmd = cmd.format(PROVIDER_NAME, org)
+    _run_command(cmd)
+
+
 def run_smoke_test():
     """Runs basic smoke test"""
     run_basic_commands()
     org = create_org()
-    activation_key = create_activation_key()
+    activation_key = create_activation_key(org=org)
     user = create_user()
     role = create_role()
     permission = create_permission()
-    distributor = create_distributor()
-    system = create_system()
-    system_group = create_system_group()
+    distributor = create_distributor(org=org)
+    system = create_system(org=org)
+    system_group = create_system_group(org=org)
+    import_manifest(org=org, delete=False)
+    refresh_manifest(org=org)
+    delete_manifest(org=org)
     output = ('org={0} ak={1} user={2} role={3} permission={4} ' +
               'distributor={5} system={6} system_group={7}')
     output = output.format(org, activation_key, user, role, permission,
