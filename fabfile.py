@@ -74,9 +74,9 @@ def create_user(username=None, password=None, email=None,
     cmd = 'user create --username {0} --password {1} --email {2}'.format(
         username, password, email)
     if default_organization is not None:
-        cmd = cmd + '--default_organization {0}'.format(default_organization)
+        cmd = cmd + ' --default_organization {0}'.format(default_organization)
     if default_locale is not None:
-        cmd = cmd + '--default_locale {0}'.format(default_locale)
+        cmd = cmd + ' --default_locale {0}'.format(default_locale)
     _run_command(cmd)
     return username
 
@@ -105,9 +105,9 @@ def create_permission(name=None, user_role=None, description=None, scope=None,
         scope = 'activation_keys'
     if verbs is None:
         verbs = 'read_all'
-    cmd = ('permission create --name {0} --user_role {1} ' +
-           '--description {2} --scope {3} --verbs {4}')
-    cmd = cmd.format(name, user_role, description, scope, verbs)
+    cmd = ('permission create --name {0} --user_role {1} '
+           '--description {2} --scope {3} --verbs {4}').format(name,
+           user_role, description, scope, verbs)
     _run_command(cmd)
     return name
 
@@ -153,12 +153,12 @@ def import_manifest(org=None, filepath=None, delete=True):
         org = create_org()
     if filepath is None:
         filepath = MANIFEST_URL
-    cmd = 'provider import_manifest create --name "{0}" --org {1} --file "{2}"'
-    cmd = cmd.format(PROVIDER_NAME, org, filepath)
+    cmd = ('provider import_manifest create --name "{0}" --org {1} '
+           '--file "{2}"').format(PROVIDER_NAME, org, filepath)
     _run_command(cmd)
     if delete is True:
-        print ('*** After manifest import it will be deleted so as',
-               ' to reuse it ***')
+        print ('* After manifest import, manifest will be deleted so as '
+               'to reuse it *')
         delete_manifest(org)
 
 
@@ -166,8 +166,8 @@ def refresh_manifest(org=None):
     """Refreshes a manifest"""
     if org is None:
         raise InvalidInputError
-    cmd = 'provider refresh_manifest --name "{0}" --org {1}'
-    cmd = cmd.format(PROVIDER_NAME, org)
+    cmd = ('provider refresh_manifest --name "{0}" '
+           '--org {1}'.format(PROVIDER_NAME, org))
     _run_command(cmd)
 
 
@@ -175,8 +175,8 @@ def delete_manifest(org=None):
     """Deletes a manifest"""
     if org is None:
         raise InvalidInputError
-    cmd = 'provider delete_manifest --name "{0}" --org {1}'
-    cmd = cmd.format(PROVIDER_NAME, org)
+    cmd = ('provider delete_manifest --name "{0}" '
+           '--org {1}'.format(PROVIDER_NAME, org))
     _run_command(cmd)
 
 
@@ -213,8 +213,10 @@ def clean_headpin():
     WARNING: All data will be lost
 
     """
-    run('katello-configure --deployment=sam --reset-data=YES',
-        '--reset-cache=YES')
+    print ('Attempting to clean headpin...This may take a few minutes. '
+          'You will be notified in case of errors')
+    run('katello-configure --deployment=sam --reset-data=YES'
+        '--reset-cache=YES', quiet=True)
 
 
 def run_smoke_test():
