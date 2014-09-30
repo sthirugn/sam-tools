@@ -207,6 +207,16 @@ def get_environment_list(org=None):
     _run_command(cmd)
 
 
+def clean_headpin():
+    """Resets and cleans headpin
+
+    WARNING: All data will be lost
+
+    """
+    run('katello-configure --deployment=sam --reset-data=YES',
+        '--reset-cache=YES')
+
+
 def run_smoke_test():
     """Runs basic smoke test"""
     org = create_org()
