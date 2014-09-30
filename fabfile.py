@@ -172,22 +172,47 @@ def delete_manifest(org=None):
     _run_command(cmd)
 
 
+def get_product_list(org=None):
+    """Get list of Products for an org"""
+    if org is None:
+        raise InvalidInputError
+    cmd = 'product list  --org {0}'
+    cmd = cmd.format(org)
+    _run_command(cmd)
+
+
+def get_provider_list(org=None):
+    """Get list of Providers for an org"""
+    if org is None:
+        raise InvalidInputError
+    cmd = 'provider list  --org {0}'
+    cmd = cmd.format(org)
+    _run_command(cmd)
+
+
+def get_environment_list(org=None):
+    """Get list of Environments for an org"""
+    if org is None:
+        raise InvalidInputError
+    cmd = 'environment list  --org {0}'
+    cmd = cmd.format(org)
+    _run_command(cmd)
+
+
 def run_smoke_test():
     """Runs basic smoke test"""
     run_basic_commands()
     org = create_org()
-    activation_key = create_activation_key(org=org)
-    user = create_user()
-    role = create_role()
-    permission = create_permission()
-    distributor = create_distributor(org=org)
-    system = create_system(org=org)
-    system_group = create_system_group(org=org)
+    create_activation_key(org=org)
+    create_user()
+    create_role()
+    create_permission()
+    create_distributor(org=org)
+    create_system(org=org)
+    create_system_group(org=org)
     import_manifest(org=org, delete=False)
     refresh_manifest(org=org)
+    get_product_list(org=org)
+    get_provider_list(org=org)
+    get_environment_list(org=org)
     delete_manifest(org=org)
-    output = ('org={0} ak={1} user={2} role={3} permission={4} ' +
-              'distributor={5} system={6} system_group={7}')
-    output = output.format(org, activation_key, user, role, permission,
-                           distributor, system, system_group)
-    print output
