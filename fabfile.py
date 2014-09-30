@@ -23,10 +23,18 @@ def _run_command(cmd=None):
     run('%s' % basic_cmd)
 
 
-def run_basic_commands():
-    """Runs basic sam server commands"""
+def run_ping_command():
+    """Runs ping command"""
     _run_command('ping')
+
+
+def run_version_command():
+    """Runs version command"""
     _run_command('version')
+
+
+def run_about_command():
+    """Runs about command"""
     _run_command('about')
 
 
@@ -201,7 +209,6 @@ def get_environment_list(org=None):
 
 def run_smoke_test():
     """Runs basic smoke test"""
-    run_basic_commands()
     org = create_org()
     create_activation_key(org=org)
     create_user()
@@ -216,3 +223,6 @@ def run_smoke_test():
     get_provider_list(org=org)
     get_environment_list(org=org)
     delete_manifest(org=org)
+    run_ping_command()
+    run_version_command()
+    run_about_command()
