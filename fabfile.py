@@ -15,12 +15,12 @@ class InvalidInputError(Exception):
     """Indicates an invalid input error"""
 
 
-def _run_command(cmd=None):
+def _run_command(cmd=None, quiet=False):
     """Executes the actual command"""
     basic_cmd = 'headpin -u {0} -p {1} '.format(USER_NAME, USER_PASSWORD)
     if cmd is not None:
         basic_cmd = basic_cmd + cmd
-    run('%s' % basic_cmd)
+    return run('%s' % basic_cmd, quiet=quiet)
 
 
 def run_ping_command():
