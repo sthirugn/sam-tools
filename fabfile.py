@@ -2,8 +2,7 @@
 Python Module for sam tests
 """
 
-import os
-import sys
+import install
 
 from fabric.api import run
 from fauxfactory import gen_string, gen_integer, gen_email
@@ -210,46 +209,6 @@ def get_environment_list(org=None):
     _run_command(cmd)
 
 
-def clean_headpin():
-    """Resets and cleans headpin
-
-    WARNING: All data will be lost
-
-    """
-    print ('Attempting to clean headpin...This may take a few minutes. '
-           'You will be notified in case of errors')
-    run('katello-configure --deployment=sam --reset-data=YES'
-        '--reset-cache=YES', quiet=True)
-
-
-def cdn_install():
-    """Installs sam from cdn"""
-    rh_portal_username = os.environ.get('RH_PORTAL_USERNAME')
-    rh_portal_password = os.environ.get('RH_PORTAL_PASSWORD')
-
-    if rh_portal_username is None or rh_portal_password is None:
-        print ('Missing Parameters: RH_PORTAL_USERNAME AND RH_PORTAL_PASSWORD '
-               'must be defined to continue installation')
-        sys.exit(1)
-
-    # Subscribe to RH portal
-    run('subscription-manager register --username="{0}" --password="{1}" '
-        '--autosubscribe'.format(rh_portal_username, rh_portal_password))
-
-    # Disable unwanted repos
-    run('yum-config-manager --disable "*"', quiet=True)
-
-    # Enable rhel6 repos and sam repos
-    run('yum-config-manager --enable rhel-6-server-rpms')
-    run('yum-config-manager --enable rhel-6-server-sam-rpms')
-
-    # Install sam
-    run('yum install -y katello-headpin-all')
-
-    # Run katello-configure
-    run('katello-configure --deployment=sam --user-pass=admin')
-
-
 def run_smoke_test():
     """Runs basic smoke test"""
     org = create_org()
@@ -269,3 +228,32 @@ def run_smoke_test():
     run_ping_command()
     run_version_command()
     run_about_command()
+
+
+def clean_headpin():
+    """Resets and cleans headpin
+
+    WARNING: All data will be lost
+
+    Note: This method is a wrapper for install.clean_headpin()
+
+    """
+    install.clean_headpin()
+
+
+def cdn_install():
+    """Installs sam from cdn
+
+    Note: This method is a wrapper for install.cdn_install()
+
+    """
+    install.cdn_install()
+
+
+def clean_rhsm():
+    """Removes pre-existing Candlepin certs and resets RHSM.
+
+    Note: This method is a wrapper for install.clean_rhsm()
+
+    """
+    install.clean_rhsm()
