@@ -167,7 +167,7 @@ def import_manifest(org=None, filepath=None, delete=True):
 def refresh_manifest(org=None):
     """Refreshes a manifest"""
     if org is None:
-        raise InvalidInputError
+        raise InvalidInputError('org should be provided to execute this task')
     cmd = ('provider refresh_manifest --name "{0}" '
            '--org {1}'.format(PROVIDER_NAME, org))
     _run_command(cmd)
@@ -176,7 +176,7 @@ def refresh_manifest(org=None):
 def delete_manifest(org=None):
     """Deletes a manifest"""
     if org is None:
-        raise InvalidInputError
+        raise InvalidInputError('org should be provided to execute this task')
     cmd = ('provider delete_manifest --name "{0}" '
            '--org {1}'.format(PROVIDER_NAME, org))
     _run_command(cmd)
@@ -185,7 +185,7 @@ def delete_manifest(org=None):
 def get_product_list(org=None):
     """Get list of Products for an org"""
     if org is None:
-        raise InvalidInputError
+        raise InvalidInputError('org should be provided to execute this task')
     cmd = 'product list  --org {0}'
     cmd = cmd.format(org)
     _run_command(cmd)
@@ -194,7 +194,7 @@ def get_product_list(org=None):
 def get_provider_list(org=None):
     """Get list of Providers for an org"""
     if org is None:
-        raise InvalidInputError
+        raise InvalidInputError('org should be provided to execute this task')
     cmd = 'provider list  --org {0}'
     cmd = cmd.format(org)
     _run_command(cmd)
@@ -203,7 +203,7 @@ def get_provider_list(org=None):
 def get_environment_list(org=None):
     """Get list of Environments for an org"""
     if org is None:
-        raise InvalidInputError
+        raise InvalidInputError('org should be provided to execute this task')
     cmd = 'environment list  --org {0}'
     cmd = cmd.format(org)
     _run_command(cmd)
