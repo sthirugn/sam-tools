@@ -2,6 +2,9 @@
 Python Module for sam tests
 """
 
+import os
+import sys
+
 from fabric.api import run
 from fauxfactory import gen_string, gen_integer, gen_email
 
@@ -106,8 +109,8 @@ def create_permission(name=None, user_role=None, description=None, scope=None,
     if verbs is None:
         verbs = 'read_all'
     cmd = ('permission create --name {0} --user_role {1} '
-           '--description {2} --scope {3} --verbs {4}').format(name,
-           user_role, description, scope, verbs)
+           '--description {2} --scope {3} '
+           '--verbs {4}').format(name, user_role, description, scope, verbs)
     _run_command(cmd)
     return name
 
@@ -214,9 +217,37 @@ def clean_headpin():
 
     """
     print ('Attempting to clean headpin...This may take a few minutes. '
-          'You will be notified in case of errors')
+           'You will be notified in case of errors')
     run('katello-configure --deployment=sam --reset-data=YES'
         '--reset-cache=YES', quiet=True)
+
+
+def cdn_install():
+    """Installs sam from cdn"""
+    rh_portal_username = os.environ.get('RH_PORTAL_USERNAME')
+    rh_portal_password = os.environ.get('RH_PORTAL_PASSWORD')
+
+    if rh_portal_username is None or rh_portal_password is None:
+        print ('Missing Parameters: RH_PORTAL_USERNAME AND RH_PORTAL_PASSWORD '
+               'must be defined to continue installation')
+        sys.exit(1)
+
+    # Subscribe to RH portal
+    run('subscription-manager register --username="{0}" --password="{1}" '
+        '--autosubscribe'.format(rh_portal_username, rh_portal_password))
+
+    # Disable unwanted repos
+    run('yum-config-manager --disable "*"', quiet=True)
+
+    # Enable rhel6 repos and sam repos
+    run('yum-config-manager --enable rhel-6-server-rpms')
+    run('yum-config-manager --enable rhel-6-server-sam-rpms')
+
+    # Install sam
+    run('yum install -y katello-headpin-all')
+
+    # Run katello-configure
+    run('katello-configure --deployment=sam --user-pass=admin')
 
 
 def run_smoke_test():
