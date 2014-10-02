@@ -2,146 +2,95 @@
 Python Module for sam tests
 """
 
-import install
-
-from fabric.api import run
-from fauxfactory import gen_string, gen_integer, gen_email
-
-USER_NAME = 'admin'
-USER_PASSWORD = 'admin'
-MANIFEST_URL = "/tmp/test_sam_manifest.zip"
-PROVIDER_NAME = "Red Hat"
+from tasks import create, delete, info, install, manifest, tests
 
 
-class InvalidInputError(Exception):
-    """Indicates an invalid input error"""
+""" Test APIs """
 
 
-def _run_command(cmd=None, quiet=False):
-    """Executes the actual command"""
-    basic_cmd = 'headpin -u {0} -p {1} '.format(USER_NAME, USER_PASSWORD)
-    if cmd is not None:
-        basic_cmd = basic_cmd + cmd
-    return run('%s' % basic_cmd, quiet=quiet)
+def run_smoke_test():
+    """Runs basic smoke test"""
+    tests.run_smoke_test()
 
 
-def run_ping_command():
-    """Runs ping command"""
-    _run_command('ping')
+def delete_tests():
+    """Runs delete tests"""
+    tests.delete_tests()
+
+"""
+Install APIs
+"""
 
 
-def run_version_command():
-    """Runs version command"""
-    _run_command('version')
+def clean_headpin():
+    """Resets and cleans headpin
+
+    WARNING: All data will be lost
+    """
+    install.clean_headpin()
 
 
-def run_about_command():
-    """Runs about command"""
-    _run_command('about')
+def cdn_install():
+    """Installs sam from cdn"""
+    install.cdn_install()
+
+
+def clean_rhsm():
+    """Removes pre-existing Candlepin certs and resets RHSM."""
+    install.clean_rhsm()
+
+"""
+Create APIs
+"""
 
 
 def create_org(name=None):
     """Creates an org."""
-    if name is None:
-        name = gen_string("alphanumeric", 10)
-    _run_command('org create --name={0}'.format(name))
-    return name
+    return create.create_org(name)
 
 
 def create_activation_key(name=None, org=None, description=None,
                           limit=None):
     """Creates an activation key."""
-    if name is None:
-        name = gen_string("alphanumeric", 10)
-    if org is None:
-        org = create_org()
-    if description is None:
-        description = gen_string("alphanumeric", 10)
-    if limit is None:
-        limit = gen_integer(min_value=1, max_value=3)
-    _run_command('activation_key create --name {0} --org {1} --description {2}'
-                 ' --limit {3}'.format(name, org, description, limit))
-    return name
+    return create.create_activation_key(name, org, description, limit)
 
 
 def create_user(username=None, password=None, email=None,
                 default_organization=None, default_locale=None):
     """Creates an user"""
-    if username is None:
-        username = gen_string("alphanumeric", 10)
-    if password is None:
-        password = gen_string("alphanumeric", 10)
-    if email is None:
-        email = gen_email("alphanumeric", 10)
-    cmd = 'user create --username {0} --password {1} --email {2}'.format(
-        username, password, email)
-    if default_organization is not None:
-        cmd = cmd + ' --default_organization {0}'.format(default_organization)
-    if default_locale is not None:
-        cmd = cmd + ' --default_locale {0}'.format(default_locale)
-    _run_command(cmd)
-    return username
+    return create.create_user(username, password, email,
+                              default_organization, default_locale)
 
 
 def create_role(name=None, description=None):
     """Creates an user role"""
-    if name is None:
-        name = gen_string("alphanumeric", 10)
-    if description is None:
-        description = gen_string("alphanumeric", 10)
-    _run_command('user_role create --name {0} --description {1}'.format(
-        name, description))
-    return name
+    return create.create_role(name, description)
 
 
 def create_permission(name=None, user_role=None, description=None, scope=None,
                       verbs=None):
     """Creates a permission"""
-    if name is None:
-        name = gen_string("alphanumeric", 10)
-    if user_role is None:
-        user_role = create_role()
-    if description is None:
-        description = gen_string("alphanumeric", 10)
-    if scope is None:
-        scope = 'activation_keys'
-    if verbs is None:
-        verbs = 'read_all'
-    cmd = ('permission create --name {0} --user_role {1} '
-           '--description {2} --scope {3} '
-           '--verbs {4}').format(name, user_role, description, scope, verbs)
-    _run_command(cmd)
-    return name
+    return create.create_permission(name, user_role, description, scope,
+                                    verbs)
 
 
 def create_distributor(name=None, org=None):
     """Creates a distributor"""
-    if name is None:
-        name = gen_string("alphanumeric", 10)
-    if org is None:
-        org = create_org()
-    _run_command('distributor create --name {0} --org {1}'.format(name, org))
-    return name
+    return create.create_distributor(name, org)
 
 
 def create_system(name=None, org=None):
     """Creates a system"""
-    if name is None:
-        name = gen_string("alphanumeric", 10)
-    if org is None:
-        org = create_org()
-    _run_command('system register --name {0} --org {1}'.format(name, org))
-    return name
+    return create.create_system(name, org)
 
 
 def create_system_group(name=None, org=None):
     """Creates a system group"""
-    if name is None:
-        name = gen_string("alphanumeric", 10)
-    if org is None:
-        org = create_org()
-    _run_command('system_group create --name {0} --org {1}'.format(name, org))
-    return name
+    return create_system_group(name, org)
+
+"""
+Manifest APIs
+"""
 
 
 def import_manifest(org=None, filepath=None, delete=True):
@@ -151,109 +100,92 @@ def import_manifest(org=None, filepath=None, delete=True):
     has to handle the deletion manually or by calling delete_manifest
 
     """
-    if org is None:
-        org = create_org()
-    if filepath is None:
-        filepath = MANIFEST_URL
-    cmd = ('provider import_manifest create --name "{0}" --org {1} '
-           '--file "{2}"').format(PROVIDER_NAME, org, filepath)
-    _run_command(cmd)
-    if delete is True:
-        print ('* After manifest import, manifest will be deleted so as '
-               'to reuse it *')
-        delete_manifest(org)
+    manifest.import_manifest(org, filepath, delete)
 
 
 def refresh_manifest(org=None):
     """Refreshes a manifest"""
-    if org is None:
-        raise InvalidInputError('org should be provided to execute this task')
-    cmd = ('provider refresh_manifest --name "{0}" '
-           '--org {1}'.format(PROVIDER_NAME, org))
-    _run_command(cmd)
+    manifest.refresh_manifest(org)
 
 
 def delete_manifest(org=None):
     """Deletes a manifest"""
-    if org is None:
-        raise InvalidInputError('org should be provided to execute this task')
-    cmd = ('provider delete_manifest --name "{0}" '
-           '--org {1}'.format(PROVIDER_NAME, org))
-    _run_command(cmd)
+    manifest.delete_manifest(org)
+
+"""
+Delete APIs
+"""
+
+
+def delete_org(name):
+    """Deletes an org."""
+    delete.delete_org(name)
+
+
+def delete_activation_key(name, org):
+    """Deletes an activation key."""
+    delete.delete_activation_key(name=name, org=org)
+
+
+def delete_user(username):
+    """Deletes an user"""
+    delete.delete_user(username)
+
+
+def delete_role(name):
+    """Creates an user role"""
+    delete.delete_role(name)
+
+
+def delete_permission(name, user_role):
+    """Creates a permission"""
+    delete.delete_permission(name, user_role)
+
+
+def delete_distributor(name, org):
+    """Deletes a distributor"""
+    delete.delete_distributor(name, org)
+
+
+def delete_system(name, org):
+    """Deletes a system"""
+    delete.delete_system(name, org)
+
+
+def delete_system_group(name, org):
+    """Deletes a system group"""
+    delete.delete_system_group(name, org)
+
+"""
+Get APIs
+"""
 
 
 def get_product_list(org=None):
     """Get list of Products for an org"""
-    if org is None:
-        raise InvalidInputError('org should be provided to execute this task')
-    cmd = 'product list  --org {0}'
-    cmd = cmd.format(org)
-    _run_command(cmd)
+    info.get_product_list(org)
 
 
 def get_provider_list(org=None):
     """Get list of Providers for an org"""
-    if org is None:
-        raise InvalidInputError('org should be provided to execute this task')
-    cmd = 'provider list  --org {0}'
-    cmd = cmd.format(org)
-    _run_command(cmd)
+    info.get_provider_list(org)
 
 
 def get_environment_list(org=None):
     """Get list of Environments for an org"""
-    if org is None:
-        raise InvalidInputError('org should be provided to execute this task')
-    cmd = 'environment list  --org {0}'
-    cmd = cmd.format(org)
-    _run_command(cmd)
+    info.get_environment_list(org)
 
 
-def run_smoke_test():
-    """Runs basic smoke test"""
-    org = create_org()
-    create_activation_key(org=org)
-    create_user()
-    create_role()
-    create_permission()
-    create_distributor(org=org)
-    create_system(org=org)
-    create_system_group(org=org)
-    import_manifest(org=org, delete=False)
-    refresh_manifest(org=org)
-    get_product_list(org=org)
-    get_provider_list(org=org)
-    get_environment_list(org=org)
-    delete_manifest(org=org)
-    run_ping_command()
-    run_version_command()
-    run_about_command()
+def run_ping_command():
+    """Runs ping command"""
+    info.run_ping_command()
 
 
-def clean_headpin():
-    """Resets and cleans headpin
-
-    WARNING: All data will be lost
-
-    Note: This method is a wrapper for install.clean_headpin()
-
-    """
-    install.clean_headpin()
+def run_version_command():
+    """Runs version command"""
+    info.run_version_command
 
 
-def cdn_install():
-    """Installs sam from cdn
-
-    Note: This method is a wrapper for install.cdn_install()
-
-    """
-    install.cdn_install()
-
-
-def clean_rhsm():
-    """Removes pre-existing Candlepin certs and resets RHSM.
-
-    Note: This method is a wrapper for install.clean_rhsm()
-
-    """
-    install.clean_rhsm()
+def run_about_command():
+    """Runs about command"""
+    info.run_about_command
