@@ -1,5 +1,5 @@
 """
-Python Module for sam tests
+Module for manipulation of sam manifests
 """
 
 from helper import InvalidInputError, run_command
@@ -9,7 +9,7 @@ MANIFEST_URL = "/tmp/test_sam_manifest.zip"
 PROVIDER_NAME = "Red Hat"
 
 
-def import_manifest(org=None, filepath=None, delete=True):
+def import_manifest(org=None, filepath=None, deleted=True):
     """Imports a manifest
 
     If delete is set to False, the manifest will not be deleted and the user
@@ -23,7 +23,7 @@ def import_manifest(org=None, filepath=None, delete=True):
     cmd = ('provider import_manifest create --name "{0}" --org {1} '
            '--file "{2}"').format(PROVIDER_NAME, org, filepath)
     run_command(cmd)
-    if delete is True:
+    if deleted is True:
         print ('* After manifest import, manifest will be deleted so as '
                'to reuse it *')
         delete_manifest(org)

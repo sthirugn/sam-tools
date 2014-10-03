@@ -1,5 +1,5 @@
 """
-Python Module for sam tests
+Module for get/info of sam cli objects
 """
 
 from helper import InvalidInputError, run_command

@@ -5,9 +5,7 @@ Python Module for sam tests
 from tasks import create, delete, info, install, manifest, tests
 
 
-""" Test APIs """
-
-
+# Test APIs
 def run_smoke_test():
     """Runs basic smoke test"""
     tests.run_smoke_test()
@@ -17,11 +15,8 @@ def delete_tests():
     """Runs delete tests"""
     tests.delete_tests()
 
-"""
-Install APIs
-"""
 
-
+# Install APIs
 def clean_headpin():
     """Resets and cleans headpin
 
@@ -35,15 +30,37 @@ def cdn_install():
     install.cdn_install()
 
 
+def install_from_repo():
+    """Task to install SAM from repo URL
+
+    Note:
+    Following environment variables are must to continue:
+    - RH_PORTAL_USERNAME
+    - RH_PORTAL_PASSWORD
+    - BASE_URL
+
+    """
+    install.install_from_repo()
+
+
+def register_subscribe():
+    """Registers and subscribes to portal
+
+    Note:
+    Following environment variables are must to continue:
+    - RH_PORTAL_USERNAME
+    - RH_PORTAL_PASSWORD
+
+    """
+    install.register_subscribe()
+
+
 def clean_rhsm():
     """Removes pre-existing Candlepin certs and resets RHSM."""
     install.clean_rhsm()
 
-"""
-Create APIs
-"""
 
-
+# Create APIs
 def create_org(name=None):
     """Creates an org."""
     return create.create_org(name)
@@ -88,19 +105,18 @@ def create_system_group(name=None, org=None):
     """Creates a system group"""
     return create_system_group(name, org)
 
-"""
-Manifest APIs
-"""
 
 
-def import_manifest(org=None, filepath=None, delete=True):
+
+# Manifest APIs
+def import_manifest(org=None, filepath=None, deleted=True):
     """Imports a manifest
 
     If delete is set to False, the manifest will not be deleted and the user
     has to handle the deletion manually or by calling delete_manifest
 
     """
-    manifest.import_manifest(org, filepath, delete)
+    manifest.import_manifest(org, filepath, deleted)
 
 
 def refresh_manifest(org=None):
@@ -112,11 +128,8 @@ def delete_manifest(org=None):
     """Deletes a manifest"""
     manifest.delete_manifest(org)
 
-"""
-Delete APIs
-"""
 
-
+# Delete APIs
 def delete_org(name):
     """Deletes an org."""
     delete.delete_org(name)
@@ -156,11 +169,8 @@ def delete_system_group(name, org):
     """Deletes a system group"""
     delete.delete_system_group(name, org)
 
-"""
-Get APIs
-"""
 
-
+# Get APIs
 def get_product_list(org=None):
     """Get list of Products for an org"""
     info.get_product_list(org)
@@ -183,9 +193,9 @@ def run_ping_command():
 
 def run_version_command():
     """Runs version command"""
-    info.run_version_command
+    info.run_version_command()
 
 
 def run_about_command():
     """Runs about command"""
-    info.run_about_command
+    info.run_about_command()

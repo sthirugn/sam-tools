@@ -1,11 +1,13 @@
 """
-Python Module for install related functionalities
+Module for installation of sam
 """
 
 import os
 import sys
 
-from fabric.api import run
+from fabric.api import put, run
+from tasks.info import run_ping_command
+from StringIO import StringIO
 
 
 def clean_headpin():
@@ -20,13 +22,14 @@ def clean_headpin():
         '--reset-cache=YES', quiet=True)
 
 
-def cdn_install():
-    """Installs sam from cdn
+def register_subscribe():
+    """Registers and subscribes to portal
 
     Note:
     Following environment variables are must to continue:
     - RH_PORTAL_USERNAME
     - RH_PORTAL_PASSWORD
+
     """
     rh_portal_username = os.environ.get('RH_PORTAL_USERNAME')
     rh_portal_password = os.environ.get('RH_PORTAL_PASSWORD')
@@ -38,7 +41,20 @@ def cdn_install():
 
     # Subscribe to RH portal
     run('subscription-manager register --username="{0}" --password="{1}" '
-        '--autosubscribe'.format(rh_portal_username, rh_portal_password))
+        '--autosubscribe --force'.format(rh_portal_username,
+                                         rh_portal_password))
+
+
+def cdn_install():
+    """Installs sam from cdn
+
+    Note:
+    Following environment variables are must to continue:
+    - RH_PORTAL_USERNAME
+    - RH_PORTAL_PASSWORD
+    """
+    # Register and subscribe the host to portal
+    register_subscribe()
 
     # Disable unwanted repos
     run('yum-config-manager --disable "*"', quiet=True)
@@ -52,6 +68,53 @@ def cdn_install():
 
     # Run katello-configure
     run('katello-configure --deployment=sam --user-pass=admin')
+
+
+def install_from_repo():
+    """Task to install SAM from repo URL
+
+    Note:
+    Following environment variables are must to continue:
+    - RH_PORTAL_USERNAME
+    - RH_PORTAL_PASSWORD
+    - BASE_URL
+
+    """
+    base_url = os.environ.get('BASE_URL')
+
+    if base_url is None:
+        print ('The BASE_URL environment variable must be defined to continue',
+               ' with the installation')
+        sys.exit(1)
+
+    # Register and subscribe
+    register_subscribe()
+
+    # Disable unwanted repos
+    print 'Disabling all repos...'
+    run('yum-config-manager --disable "*"', quiet=True)
+
+    # Enable rhel6 repos only
+    run('yum-config-manager --enable rhel-6-server-rpms')
+
+    sam_repo = StringIO()
+    sam_repo.write('[sam]\n')
+    sam_repo.write('name=sam\n')
+    sam_repo.write('baseurl={0}\n'.format(base_url))
+    sam_repo.write('enabled=1\n')
+    sam_repo.write('gpgcheck=0\n')
+    put(local_path=sam_repo,
+        remote_path='/etc/yum.repos.d/sam.repo')
+    sam_repo.close()
+
+    # Install sam
+    run('yum install -y katello-headpin-all')
+
+    # Run katello-configure
+    run('katello-configure --deployment=sam --user-pass=admin')
+
+    # Run ping test
+    run_ping_command()
 
 
 def client_registration_test():

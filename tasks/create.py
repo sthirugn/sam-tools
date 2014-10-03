@@ -1,5 +1,5 @@
 """
-Python Module for sam tests
+Module for creation of sam cli objects
 """
 
 from fauxfactory import gen_email, gen_integer, gen_string

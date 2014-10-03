@@ -1,5 +1,5 @@
 """
-Python Module for sam tests
+Module for sam cli tests and smoke tests
 """
 
 from tasks import create, delete, info, manifest
@@ -15,7 +15,7 @@ def run_smoke_test():
     create.create_distributor(org=org)
     create.create_system(org=org)
     create.create_system_group(org=org)
-    manifest.import_manifest(org=org, delete=False)
+    manifest.import_manifest(org=org, deleted=False)
     manifest.refresh_manifest(org=org)
     info.get_product_list(org=org)
     info.get_provider_list(org=org)
