@@ -106,8 +106,6 @@ def create_system_group(name=None, org=None):
     return create_system_group(name, org)
 
 
-
-
 # Manifest APIs
 def import_manifest(org=None, filepath=None, deleted=True):
     """Imports a manifest

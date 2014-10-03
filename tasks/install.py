@@ -193,6 +193,7 @@ def client_registration_test():
 
 
 def clean_rhsm():
+    # pylint: disable=W1401
     """Removes pre-existing Candlepin certs and resets RHSM."""
     print "Erasing existing Candlepin certs, if any."
     run('yum erase -y $(rpm -qa |grep candlepin-cert-consumer)',
