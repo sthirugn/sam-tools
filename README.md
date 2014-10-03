@@ -1,13 +1,19 @@
 sam-tools
 ================
-To run a specific task
+
+To run automation tests:
+
+1. git clone this repo
+2. Copy env_sample.sh and name it env.sh. Update required parameters as necessary
+3. To run a specific task
 
 ```
 fab -H $hostname -u $user create_org
 ```
-
-Test Assumptions:
-* MANIFEST_URL = "/tmp/test_sam_manifest.zip" - This assumes that this manifest file is in tmp folder of the host. Otherwise manifest test will fail.
+4. To see all the available tasks
+```
+fab --list
+```
 
 Note:
-It is better to place your ssh public key in the host so you can avoid typing password.
+It is better to place your ssh public key in the host or add -p <password> to your fab command
