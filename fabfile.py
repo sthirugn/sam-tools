@@ -2,7 +2,7 @@
 Python Module for sam tests
 """
 
-from tasks import create, delete, info, install, manifest, tests
+from tasks import create, delete, info, install, manifest, tests, update
 
 
 # Test APIs
@@ -14,6 +14,18 @@ def run_smoke_test():
 def delete_tests():
     """Runs delete tests"""
     tests.delete_tests()
+
+
+def update_tests():
+    """Runs update tests"""
+    tests.update_tests()
+
+
+def run_all_tests():
+    """Runs all tests"""
+    tests.run_smoke_test()
+    tests.delete_tests()
+    tests.update_tests()
 
 
 # Install APIs
@@ -103,7 +115,7 @@ def create_system(name=None, org=None):
 
 def create_system_group(name=None, org=None):
     """Creates a system group"""
-    return create_system_group(name, org)
+    return create.create_system_group(name, org)
 
 
 # Manifest APIs
@@ -168,6 +180,48 @@ def delete_system_group(name, org):
     delete.delete_system_group(name, org)
 
 
+# Update APIs
+def update_org(name, new_description=None):
+    """Updates an org."""
+    return update.update_org(name, new_description)
+
+
+def update_activation_key(name, org, new_name=None, new_description=None,
+                          new_limit=None):
+    """Updates an activation key."""
+    return update.update_activation_key(name, org, new_name,
+                                        new_description, new_limit)
+
+
+def update_user(username, new_password=None, new_email=None,
+                new_default_organization=None, new_default_locale=None):
+    """Updates an user"""
+    return update.update_user(username, new_password, new_email,
+                              new_default_organization, new_default_locale)
+
+
+def update_role(name, new_name=None, new_description=None):
+    """Updates a role"""
+    return update.update_role(name, new_name, new_description)
+
+
+def update_distributor(name, org, new_name=None, new_description=None):
+    """Updates a distributor"""
+    return update.update_distributor(name, org, new_name, new_description)
+
+
+def update_system(name, org, new_name=None, new_description=None):
+    """Updates a system"""
+    return update.update_system(name, org, new_name, new_description)
+
+
+def update_system_group(name, org, new_name=None, new_description=None,
+                        new_max_systems=None):
+    """Updates a system group"""
+    return update.update_system_group(name, org, new_name, new_description,
+                                      new_max_systems)
+
+
 # Get APIs
 def get_product_list(org=None):
     """Get list of Products for an org"""
@@ -197,3 +251,43 @@ def run_version_command():
 def run_about_command():
     """Runs about command"""
     info.run_about_command()
+
+
+def get_org(name):
+    """Gets an org"""
+    info.get_org(name)
+
+
+def get_activation_key(name, org):
+    """Gets an activation key"""
+    info.get_activation_key(name, org)
+
+
+def get_user(username):
+    """Gets an user"""
+    info.get_user(username)
+
+
+def get_role(name):
+    """Gets a role"""
+    info.get_role(name)
+
+
+def get_permission(user_role):
+    """Gets permissions for a role"""
+    info.get_permission(user_role)
+
+
+def get_distributor(name, org):
+    """Gets a distributor"""
+    info.get_distributor(name, org)
+
+
+def get_system(name, org):
+    """Gets a system"""
+    info.get_system(name, org)
+
+
+def get_system_group(name, org):
+    """Gets a system group"""
+    info.get_system_group(name, org)
