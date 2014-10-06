@@ -6,12 +6,6 @@ from fauxfactory import gen_email, gen_integer, gen_string
 from helper import run_command
 
 
-USER_NAME = 'admin'
-USER_PASSWORD = 'admin'
-MANIFEST_URL = "/tmp/test_sam_manifest.zip"
-PROVIDER_NAME = "Red Hat"
-
-
 def create_org(name=None):
     """Creates an org."""
     if name is None:
