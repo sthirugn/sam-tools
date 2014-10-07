@@ -109,7 +109,7 @@ def update_system_group(name=None, org=None,
     if new_name is not None:
         cmd = cmd + '--new_name {0} '.format(new_name)
     if new_description is not None:
-        cmd = cmd + '--description {0}'.format(new_description)
+        cmd = cmd + '--description {0} '.format(new_description)
     if new_max_systems is not None:
         cmd = cmd + '--max_systems {0}'.format(new_max_systems)
     run_command(cmd)
