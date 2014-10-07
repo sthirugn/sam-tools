@@ -2,10 +2,13 @@
 Module for manipulation of sam manifests
 """
 
-from helper import InvalidInputError, run_command
+from helper import get_config, InvalidInputError, run_command
 from tasks.create import create_org
 
-MANIFEST_URL = "/tmp/test_sam_manifest.zip"
+MANIFEST_URL = get_config('samtools', 'manifest_url')
+if MANIFEST_URL is None:
+    raise InvalidInputError('Missing Parameters: manifest_url must be defined '
+                            'in samtools.properties to continue this test')
 PROVIDER_NAME = "Red Hat"
 
 

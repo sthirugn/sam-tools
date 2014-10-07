@@ -2,7 +2,15 @@
 Python Module for sam tests
 """
 
+from fabric.api import env
+from helper import get_host, get_test_username
 from tasks import create, delete, info, install, manifest, tests, update
+
+# Append host from config file
+env.hosts = get_host(env.hosts)
+
+# Override user from config file, if specified
+env.user = get_test_username(env.user)
 
 
 # Test APIs

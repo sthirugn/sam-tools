@@ -6,6 +6,7 @@ import os
 import sys
 
 from fabric.api import put, run
+from helper import get_config
 from tasks.info import run_ping_command
 from StringIO import StringIO
 
@@ -26,17 +27,18 @@ def register_subscribe():
     """Registers and subscribes to portal
 
     Note:
-    Following environment variables are must to continue:
-    - RH_PORTAL_USERNAME
-    - RH_PORTAL_PASSWORD
+    Following samtools.properties config values are must to continue:
+    - rh_portal_username
+    - rh_portal_password
 
     """
-    rh_portal_username = os.environ.get('RH_PORTAL_USERNAME')
-    rh_portal_password = os.environ.get('RH_PORTAL_PASSWORD')
+    rh_portal_username = get_config('samtools', 'rh_portal_username')
+    rh_portal_password = get_config('samtools', 'rh_portal_password')
 
     if rh_portal_username is None or rh_portal_password is None:
-        print ('Missing Parameters: RH_PORTAL_USERNAME AND RH_PORTAL_PASSWORD '
-               'must be defined to continue installation')
+        print ('Missing Parameters: rh_portal_username AND rh_portal_password '
+               'must be defined in samtools.properties to continue '
+               'installation')
         sys.exit(1)
 
     # Subscribe to RH portal
@@ -49,9 +51,9 @@ def cdn_install():
     """Installs sam from cdn
 
     Note:
-    Following environment variables are must to continue:
-    - RH_PORTAL_USERNAME
-    - RH_PORTAL_PASSWORD
+    Following samtools.properties config values are must to continue:
+    - rh_portal_username
+    - rh_portal_password
     """
     # Register and subscribe the host to portal
     register_subscribe()
@@ -74,17 +76,17 @@ def install_from_repo():
     """Task to install SAM from repo URL
 
     Note:
-    Following environment variables are must to continue:
-    - RH_PORTAL_USERNAME
-    - RH_PORTAL_PASSWORD
-    - BASE_URL
+    Following samtools.properties config values are must to continue:
+    - rh_portal_username
+    - rh_portal_password
+    - base_url
 
     """
-    base_url = os.environ.get('BASE_URL')
+    base_url = get_config('samtools', 'base_url')
 
     if base_url is None:
-        print ('The BASE_URL environment variable must be defined to continue',
-               ' with the installation')
+        print ('Missing Parameters: base_url must be defined in '
+               'samtools.properties to continue installation')
         sys.exit(1)
 
     # Register and subscribe
