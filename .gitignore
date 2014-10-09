@@ -53,5 +53,5 @@ coverage.xml
 docs/_build/
 
 # Varies with each build
-env.sh
+samtools.properties
 
