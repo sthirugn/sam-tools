@@ -79,6 +79,16 @@ def clean_rhsm():
     """Removes pre-existing Candlepin certs and resets RHSM."""
     install.clean_rhsm()
 
+def client_registration_test():
+    """Register client against sam and runs tests
+    
+    Note:
+    Following environment variables are must to continue:
+    - ORG
+    - ACTIVATIONKEY
+    - CERTURL
+    """
+    install.client_registration_test()
 
 # Create APIs
 def create_org(name=None):
