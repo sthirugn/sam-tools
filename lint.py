@@ -1,7 +1,7 @@
-
 """Logic for linting Python files in this application with Pylint."""
-from pylint.lint import Run
+
 import os
+from pylint.lint import Run
 
 
 def lint():

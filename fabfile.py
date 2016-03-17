@@ -81,7 +81,7 @@ def clean_rhsm():
 
 def client_registration_test():
     """Register client against sam and runs tests
-    
+
     Note:
     Following environment variables are must to continue:
     - ORG

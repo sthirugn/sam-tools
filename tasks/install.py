@@ -5,10 +5,10 @@ Module for installation of sam
 import os
 import sys
 
+from StringIO import StringIO
 from fabric.api import put, run
 from helper import get_config
 from tasks.info import run_ping_command
-from StringIO import StringIO
 
 
 def clean_headpin():
@@ -65,6 +65,11 @@ def cdn_install():
     run('yum-config-manager --enable rhel-6-server-rpms')
     run('yum-config-manager --enable rhel-6-server-sam-rpms')
 
+    custom_url = get_config('samtools', 'custom_url')
+
+    if custom_url is not None:
+        create_repo(custom_url)
+
     # Install sam
     run('yum install -y katello-headpin-all')
 
@@ -99,15 +104,7 @@ def install_from_repo():
     # Enable rhel6 repos only
     run('yum-config-manager --enable rhel-6-server-rpms')
 
-    sam_repo = StringIO()
-    sam_repo.write('[sam]\n')
-    sam_repo.write('name=sam\n')
-    sam_repo.write('baseurl={0}\n'.format(base_url))
-    sam_repo.write('enabled=1\n')
-    sam_repo.write('gpgcheck=0\n')
-    put(local_path=sam_repo,
-        remote_path='/etc/yum.repos.d/sam.repo')
-    sam_repo.close()
+    create_repo(base_url)
 
     # Install sam
     run('yum install -y katello-headpin-all')
@@ -208,3 +205,15 @@ def clean_rhsm():
         "/etc/rhsm/rhsm.conf")
     run("sed -i -e 's/^repo_ca_cert.*/repo_ca_cert=%(ca_cert_dir)"
         "sredhat-uep.pem/' /etc/rhsm/rhsm.conf")
+
+def create_repo(url):
+    """Creates repo with the given url"""
+    repo = StringIO()
+    repo.write('[sam]\n')
+    repo.write('name=sam\n')
+    repo.write('baseurl={0}\n'.format(url))
+    repo.write('enabled=1\n')
+    repo.write('gpgcheck=0\n')
+    put(local_path=repo,
+        remote_path='/etc/yum.repos.d/sam.repo')
+    repo.close()

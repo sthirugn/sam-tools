@@ -11,7 +11,7 @@ def update_org(name, new_description=None):
         raise InvalidInputError('org name should be provided'
                                 'to execute this task')
     run_command('org update --name={0} --description={1}'.format(
-                name, new_description))
+        name, new_description))
     return name
 
 

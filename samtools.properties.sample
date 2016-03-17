@@ -7,5 +7,6 @@ user=myuser
 [samtools]
 rh_portal_username=secret@secret.com
 rh_portal_password=ToPsEcReT
+custom_url=Path to custom os repo
 base_url=Path to install source
 manifest_url=Path to manifest

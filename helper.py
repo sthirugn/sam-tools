@@ -2,12 +2,12 @@
 Python Module for sam tests
 """
 
+import ConfigParser
 from fabric.api import run
 
 USER_NAME = 'admin'
 USER_PASSWORD = 'admin'
 
-import ConfigParser
 CONF = ConfigParser.RawConfigParser()
 # if the config file is not found, it will be silently ignored
 CONF.read('samtools.properties')
